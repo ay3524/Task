@@ -50,5 +50,4 @@ dependencies {
 
     //Data
     implementation 'io.realm:android-adapters:2.0.0'
-//    compile 'io.realm:realm-android:0.87.4'
 }

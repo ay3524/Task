@@ -43,7 +43,7 @@ public class MainPresenter implements MainContract.Action {
 
     public void exclusionLogic(Option option) {
 
-        if (i < listSize) {
+        if ((i + 1) < listSize && i >= 0) {
             //TODO Pass the filtered Data not "facilityList.get(i).getOptions()"
             navigateLogic(facilityList.get(i).getOptions());
             String facilityId = facilityList.get(i).getFacilityId();
@@ -58,10 +58,11 @@ public class MainPresenter implements MainContract.Action {
             List<Option> nextOptionList = getNextOptionForFacilityId(nextFacility.getFacilityId(), nextFacility.getOptions());
 
             navigateLogic(nextOptionList);
-//            JSONArray optionArray = obj.getJSONArray("facilities").getJSONObject(1).getJSONArray("options");
-
             i++;
+        } else {
+            mainContractView.onEndReached();
         }
+
     }
 
     private List<Option> getNextOptionForFacilityId(String facilityId, List<Option> optionList) {
@@ -75,27 +76,20 @@ public class MainPresenter implements MainContract.Action {
             finalExclusionArray.addAll(exclusionArrayOfCurrentFacility);
         }
 
-
-        result = getFinalOptionsForFacilityId(facilityId,optionList, finalExclusionArray);
+        result = getFinalOptionsForFacilityId(facilityId, optionList, finalExclusionArray);
 
         return result;
     }
 
     private void navigateLogic(List<Option> optionsList) {
-        if (listSize > 0 && listSize >= i + 1) {
+        if (listSize > 0 && listSize >= i + 1 && i >= 0) {
             mainContractView.refreshData(optionsList);
         } else {
             mainContractView.onEndReached();
         }
     }
 
-    public void updatePositionValue(int backStackCount) {
-        if (backStackCount > 1) {
-            i = backStackCount - 1;
-        }
-    }
-
-    private List<Option> getFinalOptionsForFacilityId(String facilityId,List<Option> optionList, List<List<Exclusion>> finalExclusionArray) {
+    private List<Option> getFinalOptionsForFacilityId(String facilityId, List<Option> optionList, List<List<Exclusion>> finalExclusionArray) {
 
         List<String> ids = ListUtils.getAllExclusionId(facilityId, finalExclusionArray);
         List<Option> result = new ArrayList<>();

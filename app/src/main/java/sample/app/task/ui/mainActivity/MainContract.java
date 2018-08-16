@@ -5,7 +5,6 @@ import java.util.List;
 import sample.app.task.pojo.Exclusion;
 import sample.app.task.pojo.Facility;
 import sample.app.task.pojo.Option;
-import sample.app.task.pojo.Response;
 
 public interface MainContract {
     interface Action {

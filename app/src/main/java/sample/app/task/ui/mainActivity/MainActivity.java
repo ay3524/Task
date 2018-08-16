@@ -21,16 +21,18 @@ import butterknife.ButterKnife;
 import sample.app.task.R;
 import sample.app.task.pojo.Option;
 import sample.app.task.scheduler.MyJobService;
+import sample.app.task.ui.FinalFragment;
 import sample.app.task.ui.itemType.ItemTypeFragment;
 import sample.app.task.ui.itemType.ItemTypeListener;
+import sample.app.task.utils.NetworkUtils;
 
 public class MainActivity extends AppCompatActivity implements MainContract.View, ItemTypeListener {
 
-    public static String PROPERTY_TYPE_FRAGMENT_TAG = "property_type_fragment";
     @BindView(R.id.progress)
     ProgressBar progressBar;
     MainPresenter mainPresenter;
     private FragmentManager mFragmentManager;
+    String selectedData = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,20 +42,13 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         ButterKnife.bind(this);
 
         mainPresenter = new MainPresenter(this);
-        mainPresenter.init();
-        scheduleJob();
-    }
 
-    public void addFragment(@IdRes int containerViewId,
-                            @NonNull Fragment fragment,
-                            @NonNull String fragmentTag) {
-
-
-        getSupportFragmentManager()
-                .beginTransaction()
-                .add(containerViewId, fragment, fragmentTag)
-                .disallowAddToBackStack()
-                .commit();
+        if (NetworkUtils.isNetworkConnected(getApplicationContext())) {
+            mainPresenter.init();
+        } else {
+            Toast.makeText(this, "No internet connection!", Toast.LENGTH_SHORT).show();
+        }
+//        scheduleJob();
     }
 
     protected void replaceFragment(@IdRes int containerViewId,
@@ -93,25 +88,23 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 
     @Override
     public void onEndReached() {
-        Toast.makeText(this, "End Reached!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "You have Selected Data \n" + selectedData.trim(), Toast.LENGTH_LONG).show();
+        FinalFragment finalFragment = FinalFragment.newInstance(selectedData);
+        replaceFragment(R.id.activity_main_content, finalFragment);
     }
 
     @Override
     public void onItemListenFromFragment(Option option) {
-        Toast.makeText(getApplicationContext(), option.getName(), Toast.LENGTH_SHORT).show();
-        //TODO Apply exclusion logic
+        String optionName = option.getName();
+        if (!selectedData.contains(optionName)){
+            selectedData = selectedData.concat(optionName + " \n");
+        }
         mainPresenter.exclusionLogic(option);
-    }
+}
 
     @Override
     public void onBackPressed() {
-        int backStackCount = mFragmentManager.getBackStackEntryCount();
-        if (backStackCount > 1) {
-            mFragmentManager.popBackStackImmediate();
-            mainPresenter.updatePositionValue(backStackCount);
-        } else {
-            finish();
-        }
+        finish();
     }
 
     private void scheduleJob() {

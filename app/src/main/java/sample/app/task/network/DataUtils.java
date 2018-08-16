@@ -8,17 +8,17 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import sample.app.task.pojo.Exclusion;
 import sample.app.task.pojo.Facility;
-import sample.app.task.pojo.Option;
 import sample.app.task.pojo.Response;
 
 public class DataUtils {
 
     private DataCallback dataCallback;
-    public DataUtils(DataCallback dataCallback){
+
+    public DataUtils(DataCallback dataCallback) {
         this.dataCallback = dataCallback;
     }
 
-    public void fetchData(){
+    public void fetchData() {
         ApiInterface apiService =
                 ApiClient.getClient().create(ApiInterface.class);
 
@@ -58,7 +58,7 @@ public class DataUtils {
             List<Facility> facilityList = responseFetched.getFacilities();
             List<List<Exclusion>> exclusionsList = responseFetched.getExclusions();
 
-            dataCallback.onDataFetchSuccess(facilityList,exclusionsList);
+            dataCallback.onDataFetchSuccess(facilityList, exclusionsList);
         }
     }
 }
